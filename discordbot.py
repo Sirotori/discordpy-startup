@@ -1,11 +1,8 @@
-#coding: UTF-8
 from discord.ext import commands
 import os
 import traceback
 import discord
 import random
-import ssl
-import emoji
 
 
 token = os.environ['DISCORD_BOT_TOKEN']
@@ -14,8 +11,6 @@ client = discord.Client()
 list= ["刀","扇", "薙", "銃", "忍", "傘", "書", "毒", "絡", "騎", "古", "琵", "炎", "笛", "戦", "社","経", "絆","機", "新","爪","拒", "鎌", "塵", "旗","橇","鏡","櫂","兜", "槌","嵐", "棹", "面", "勾", "金", "恐"]
 list2 = ["大気の護符","水の護符","火の護符","土の護符","イシュターの天秤","春の杖","時のブーツ","イオの財布","聖杯","信心深きサイラス","強欲のフィグリム","女預言者ナリア","驚愕の箱","物乞いの角笛","悪意のダイス","破壊者ケアン","首長のアムサグ","魔法の秘本","ラグフィールドの兜","運命の手","灰顔のルイス","イオリスのルーン方体","力の薬","夢の薬","知識の薬","命の薬","時の砂時計","壮大の錫杖","オラフの祝福の像","ヤンの忘れられた花瓶","精霊のアミュレット","光の木","アルカノ蛭","水晶球","暴食の大鍋","吸血の王冠","竜の頭蓋骨","アルゴスの悪魔","深き眼差しのタイタス","大気の精霊","泥棒フェアリー","アルスの呪われた書","使い魔の偶像","壊死のクリス","クシディットのランプ","ウルムの封印された箱","季節の鏡","ラグノールのペンダント","夜影のシド","オニスの忌まわしき魂", "大気の護符","水の護符","火の護符","水の護符","イシュターの天秤","春の杖","時のブーツ","イオの財布","聖杯","信心深きサイラス","強欲のフィグリム","女預言者ナリア","驚愕の箱","物乞いの角笛","悪意のダイス","破壊者ケアン","首長のアムサグ","魔法の秘本","ラグフィールドの兜","運命の手","灰顔のルイス","イオリスのルーン方体","力の薬","夢の薬","知識の薬","命の薬","時の砂時計","壮大の錫杖","オラフの祝福の像","ヤンの忘れられた花瓶","精霊のアミュレット","光の木","アルカノ蛭","水晶球","暴食の大鍋","吸血の王冠","竜の頭蓋骨","アルゴスの悪魔","深き眼差しのタイタス","大気の精霊","泥棒フェアリー","アルスの呪われた書","使い魔の偶像","壊死のクリス","クシディットのランプ","ウルムの封印された箱","季節の鏡","ラグノールのペンダント","夜影のシド","オニスの忌まわしき魂"]
 list3 = ["吸血の王冠", "精霊のアミュレット", "水晶球", "力の薬"]
-list4=[":spades:A",":spades:2", ":spades:3",":spades:4", ":spades:5",":spades:6", ":spades:7",":spades:8", ":spades:9",":spades:10", ":spades:J",":spades:Q",":spades:K",":hearts:A", ":hearts:2", ":hearts:3", ":hearts:4", ":hearts:5", ":hearts:6",":hearts:7", ":hearts:8", ":hearts:9", ":hearts:10", ":hearts:J", ":hearts:Q", ":hearts:K", ":clubs:A", ":clubs:2", ":clubs:3", ":clubs:4", ":clubs:5", ":clubs:6",":clubs:7", ":clubs:8", ":clubs:9", ":clubs:10", ":clubs:J", ":clubs:Q", ":clubs:K",":diamonds:A",":diamonds:2", ":diamonds:3",":diamonds:4", ":diamonds:5", ":diamonds:6",":diamonds:7", ":diamonds:8", ":diamonds:9", ":diamonds:10", ":diamonds:J", ":diamonds:Q", ":diamonds:K"]
-list5=[":spades:A",":spades:2", ":spades:3",":spades:4", ":spades:5",":spades:6", ":spades:7",":spades:8", ":spades:9",":spades:10", ":spades:J",":spades:Q",":spades:K",":hearts:A", ":hearts:2", ":hearts:3", ":hearts:4", ":hearts:5", ":hearts:6",":hearts:7", ":hearts:8", ":hearts:9", ":hearts:10", ":hearts:J", ":hearts:Q", ":hearts:K", ":clubs:A", ":clubs:2", ":clubs:3", ":clubs:4", ":clubs:5", ":clubs:6",":clubs:7", ":clubs:8", ":clubs:9", ":clubs:10", ":clubs:J", ":clubs:Q", ":clubs:K",":diamonds:A",":diamonds:2", ":diamonds:3",":diamonds:4", ":diamonds:5", ":diamonds:6",":diamonds:7", ":diamonds:8", ":diamonds:9", ":diamonds:10", ":diamonds:J", ":diamonds:Q", ":diamonds:K", "Jo"]
 listN = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 list6=["	a-基本	2	寄付		"	,
 "	a-基本	2	願いの泉		"	,
@@ -398,29 +393,7 @@ async def on_message(message):
             m = message.author.name + "さんの今日の運勢は" + list3[0] + "で"+ list2[0] + "を引くくらいの運勢です。"
             await message.channel.send(m)
 
-    if message.content.startswith("card2"):
-        if client.user != message.author:
-            random.shuffle(list4)
-            m = emoji.emojize(list4[0]+list4[1], use_aliases=True)
-            await message.channel.send(m)
 
-    if message.content.startswith("card1"):
-        if client.user != message.author:
-            random.shuffle(list4)
-            m = emoji.emojize(list4[0], use_aliases=True)
-            await message.channel.send(m)
-
-    if message.content.startswith("card3"):
-        if client.user != message.author:
-            random.shuffle(list4)
-            m = emoji.emojize(list4[0]+list4[1]+list4[2], use_aliases=True)
-            await message.channel.send(m)
-
-    if message.content.startswith("napo"):
-        if client.user != message.author:
-            random.shuffle(list5)
-            m = emoji.emojize(list5[0]+list5[1]+list5[2]+list5[3]+list5[4]+list5[5]+list5[6]+list5[7]+list5[8]+list5[9], use_aliases=True)
-            await message.channel.send(m)
 
     if message.content.startswith("pick"):
         if client.user != message.author:
