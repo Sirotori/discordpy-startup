@@ -1,18 +1,99 @@
-from discord.ext import commands
-import os
-import traceback
+#coding: UTF-8
 import discord
 import random
+import ssl
 
-
-token = os.environ['DISCORD_BOT_TOKEN']
 client = discord.Client()
 
-list= ["刀","扇", "薙", "銃", "忍", "傘", "書", "毒", "絡", "騎", "古", "琵", "炎", "笛", "戦", "社","経", "絆","機", "新","爪","拒", "鎌", "塵", "旗","橇","鏡","櫂","兜", "槌","嵐", "棹", "面", "勾", "金", "恐"]
+
+pile = ["攻撃1 落とし物	"+"\n"+"	念運空	"+"\n"+"	任意のプレイヤーに運命干渉を行う。"+"\n"+"\n",
+"攻撃1 占術	"+"\n"+"	運空精	"+"\n"+"	相手にダメージを与えたら、あなたの手札のカード1枚で精神感応を試みてもよい。"+"\n"+"\n",
+"攻撃1 野犬	"+"\n"+"	念運精	"+"\n"+"	任意のプレイヤーに運命干渉を行う。"+"\n"+"\n",
+"攻撃1 滑る地面	"+"\n"+"	熱念運	"+"\n"+"	防御されなければ、次のあなたのターンまで、あなたはダメージを受けない。"+"\n"+"\n",
+"攻撃1 支配	"+"\n"+"	運精	"+"\n"+"	山札の一番上のカードで精神感応を試みる。"+"\n"+"\n",
+"攻撃1 揺さぶり	"+"\n"+"	念空精	"+"\n"+"	相手にダメージを与えたら、あなたの手札のカード1枚で精神感応を試みてもよい。"+"\n"+"\n",
+"攻撃1 磁場	"+"\n"+"	電念運	"+"\n"+"	防御されなければ、次のあなたのターンまで、あなたはダメージを受けない。"+"\n"+"\n",
+"攻撃2 漏電	"+"\n"+"	電空	"+"\n"+"	ターゲット以外のプレイヤー1人に2ダメージを与えてもよい。"+"\n"+"\n",
+"攻撃2 不幸な事故	"+"\n"+"	電熱運"+"\n"+"\n",
+"攻撃2 高速弾	"+"\n"+"	電熱念"+"\n"+"\n",
+"攻撃2 縮地	"+"\n"+"	念空	"+"\n"+"	防御不可"+"\n"+"\n",
+"攻撃2 落石	"+"\n"+"	念運	"+"\n"+"	防御不可。任意のプレイヤーに運命干渉を行う。"+"\n"+"\n",
+"攻撃2 熱感	"+"\n"+"	熱精	"+"\n"+"	相手にダメージを与えたら、あなたの手札のカード1枚で精神感応を試みてもよい。"+"\n"+"\n",
+"攻撃2 拷問	"+"\n"+"	念精	"+"\n"+"	相手にダメージを与えたら、あなたの手札のカード1枚で精神感応を試みてもよい。"+"\n"+"\n",
+"攻撃2 運命変転	"+"\n"+"	運	"+"\n"+"	自分の縦向きの捨て札を1枚選ぶ。そのカードのダメージと効果をこのカードに追加する。"+"\n"+"\n",
+"攻撃3 電磁砲	"+"\n"+"	電念	"+"\n"+"	自分に1ダメージ。防御されなければ、次のあなたのターンまで、あなたはダメージを受けない。"+"\n"+"\n",
+"攻撃3 雹塊	"+"\n"+"	熱運"+"\n"+"\n",
+"攻撃3 爆発	"+"\n"+"	熱念"+"\n"+"\n",
+"攻撃3 落雷	"+"\n"+"	電運	"+"\n"+"	自分に1ダメージ。任意のプレイヤーに運命干渉を行う。"+"\n"+"\n",
+"攻撃4 夢幻暴走	"+"\n"+"	念	"+"\n"+"	次のあなたのターンまで、あなたはダメージを受けず、レゾナンスリングを使用されない。"+"\n"+"\n",
+"攻撃4 電熱ブレード	"+"\n"+"	電熱	"+"\n"+"	自分に2ダメージ。"+"\n"+"\n",
+"攻撃5 完全焼却	"+"\n"+"	熱"+"\n"+"\n",
+"攻撃6 衝天轟雷	"+"\n"+"	電	"+"\n"+"	自分に3ダメージ。"+"\n"+"\n",
+"防御 蜃気楼	"+"\n"+"	熱空精	"+"\n"+"	防御した攻撃のダメージを2軽減する。"+"\n"+"\n",
+"防御 静電気	"+"\n"+"	電空精	"+"\n"+"	防御した攻撃のダメージを2軽減する。"+"\n"+"\n",
+"防御 突風	"+"\n"+"	熱空	"+"\n"+"	防御した攻撃のダメージを2軽減し、ターゲットに1ダメージを与える。"+"\n"+"\n",
+"防御 高速移動	"+"\n"+"	電熱空	"+"\n"+"	防御した攻撃のダメージを1軽減し、ターゲットに1ダメージを与える。"+"\n"+"\n",
+"防御 閃光	"+"\n"+"	電熱精	"+"\n"+"	防御した攻撃のダメージを1軽減し、ターゲットに1ダメージを与える。"+"\n"+"\n",
+"防御 ニューロン暴走	"+"\n"+"	電精	"+"\n"+"	ターゲットに2ダメージを与える。"+"\n"+"\n",
+"防御 空間識変調	"+"\n"+"	空精	"+"\n"+"	防御した攻撃のダメージを1軽減する。その後、あなたの手札のカード1枚で精神感応を試みてもよい。"+"\n"+"\n",
+"防御 落とし穴	"+"\n"+"	運空	"+"\n"+"	防御した攻撃のダメージを2軽減し、任意のプレイヤーに運命干渉を行う。"+"\n"+"\n",
+"防御 空間連結	"+"\n"+"	空	"+"\n"+"	防御した攻撃を無効化する。そのカードを自分の能力を無視して直ちにあなたが使用する。その後、そのカードを元々の使用者の捨て札に縦向きで置く。"+"\n"+"\n",
+"防御 精神破壊	"+"\n"+"	精	"+"\n"+"	自分に4ダメージ。防御した攻撃を無効化する。あなた以外のプレイヤー全員は能力1つを使用不能にする。（能力カードを1枚選び、表にする）"+"\n"+"\n"]
+attack = []
+defense = []
+bottrash = []
+myhand = []
+abilityA = ["電", "熱", "念", "運", "空", "精"]
+abilityB = ["電", "熱", "念", "運", "空", "精"]
+
+
+startshadow = 0
+
+list3=["あなたはヴァンパイア陣営です。vと入力してください。", "あなたはワーウルフ陣営です。wと入力してください。", "あなたは人間陣営です。hと入力してください。"]
+list4=["あなたはバンパイア陣営です。vと入力してください。", "あなたはワーウルフ陣営です。wと入力してください。","あなたはバンパイア陣営です。vと入力してください。", "あなたはワーウルフ陣営です。wと入力してください。"]
+list5=["あなたはバンパイア陣営です。vと入力してください。", "あなたはワーウルフ陣営です。wと入力してください。","あなたはバンパイア陣営です。vと入力してください。", "あなたはワーウルフ陣営です。wと入力してください。","あなたは人間陣営です。hと入力してください。"]
+list6=["あなたはバンパイア陣営です。vと入力してください。", "あなたはワーウルフ陣営です。wと入力してください。","あなたはバンパイア陣営です。vと入力してください。", "あなたはワーウルフ陣営です。wと入力してください。","あなたは人間陣営です。hと入力してください。","あなたは人間陣営です。hと入力してください。"]
+list7=["あなたはバンパイア陣営です。vと入力してください。", "あなたはワーウルフ陣営です。wと入力してください。","あなたはバンパイア陣営です。vと入力してください。", "あなたはワーウルフ陣営です。wと入力してください。","あなたは人間陣営です。hと入力してください。","あなたは人間陣営です。hと入力してください。", "あなたは人間陣営です。hと入力してください。"]
+list8=["あなたはバンパイア陣営です。vと入力してください。", "あなたはワーウルフ陣営です。wと入力してください。","あなたはバンパイア陣営です。vと入力してください。", "あなたはワーウルフ陣営です。wと入力してください。","あなたはバンパイア陣営です。vと入力してください。", "あなたはワーウルフ陣営です。wと入力してください。","あなたは人間陣営です。hと入力してください。","あなたは人間陣営です。hと入力してください。"]
+
+listv=["HP11"+"\n"+"U"+"\n"+"勝利条件: 全てのワーウルフを倒す"+"\n"+"特殊能力: 手番の開始時に「墓場」にいるプレイヤー一人を選び3ダメージを与える", 
+"HP11"+"\n"+"U"+"\n"+"勝利条件: 全てのワーウルフを倒す"+"\n"+"特殊能力: 緑のカードを受け取った際、答えを偽ることができる。公開の必要はない。正体判明の効果を受けない。",
+"HP13"+"\n"+"V"+"\n"+"勝利条件: 全てのワーウルフを倒す"+"\n"+"特殊能力: 攻撃時に4面ダイスを振り、出た目のダメージを与える", 
+"HP13"+"\n"+"V"+"\n"+"勝利条件: 全てのワーウルフを倒す"+"\n"+"特殊能力: 自身の攻撃により誰かにダメージを与えた場合、直ちに自分のダメージを2回復する", 
+"HP14"+"\n"+"W"+"\n"+"勝利条件: 全てのワーウルフを倒す"+"\n"+"特殊能力: ゲーム中一回限り、自分の手番の後で追加手番を脱落したプレイヤー一人につき一回行える", 
+"HP14"+"\n"+"W"+"\n"+"勝利条件: 全てのワーウルフを倒す"+"\n"+"特殊能力: 誰かがあなたを攻撃してきた場合、そのあとでそのプレイヤーに対し攻撃することができる"]
+
+listw=["HP10"+"\n"+"E"+"\n"+"勝利条件: 全てのバンパイアを倒す"+"\n"+"特殊能力: 移動する際にダイスを振らずに左または右に隣接する場所に移動することができる。", 
+"HP10"+"\n"+"E"+"\n"+"勝利条件: 全てのバンパイアを倒す"+"\n"+"特殊能力: ゲーム中一回限り、自分の手番の開始時に誰か一人のプレイヤーを選び、そのプレイヤーの特殊能力をゲーム終了時まで封印する。", 
+"HP12"+"\n"+"F"+"\n"+"勝利条件: 全てのバンパイアを倒す"+"\n"+"特殊能力: ゲーム中一回限り、自分の手番開始時に誰か一人を選び、1d6のダメージを与える", 
+"HP12"+"\n"+"F"+"\n"+"勝利条件: 全てのバンパイアを倒す"+"\n"+"特殊能力: ゲーム中一回限り、自分の手番開始時に他のプレイヤーのマーカーを血の月マスに送る", 
+"HP14"+"\n"+"G"+"\n"+"勝利条件: 全てのバンパイアを倒す"+"\n"+"特殊能力: ゲーム中一回限り、自分の手番終了時に次の自分の手番開始時までダメージを受けないことを宣言できる", 
+"HP14"+"\n"+"G"+"\n"+"勝利条件: 全てのバンパイアを倒す"+"\n"+"特殊能力: ゲーム中一回限り、自分の手番開始時に誰か一人を選び、1d4のダメージを与える"]
+
+listh=["HP8"+"\n"+"A"+"\n"+"勝利条件: ゲーム終了時に脱落していない"+"\n"+"特殊能力: ゲーム中一回限り自分のダメージを全て回復可能",
+"HP8"+"\n"+"A"+"\n"+"勝利条件: ゲーム終了時に脱落していない"+"\n"+"特殊能力: ゲーム中一回限り自分のダメージを全て回復可能", 
+"HP8"+"\n"+"A"+"\n"+"勝利条件: 右隣りのプレイヤーの勝利"+"\n"+"特殊能力: ゲーム中一回限り勝利条件を「左隣りのプレイヤーの勝利」に変更可能", 
+"HP10"+"\n"+"B"+"\n"+"勝利条件: あなたの攻撃により「受けられるダメージが13以上」のプレイヤーを脱落させる。またはゲーム終了時にストーンサークルにコマがある"+"\n"+"特殊能力: あなたの攻撃により「受けられるダメージが12以下」のプレイヤーを脱落させた場合、自身のキャラクターを強制公開", 
+"HP10"+"\n"+"B"+"\n"+"勝利条件: 4つ以上のアイテムを持つ"+"\n"+"特殊能力: あなたの攻撃によりプレイヤーを脱落させた場合、そのプレイヤーのアイテムをすべて奪うことができる", 
+"HP11"+"\n"+"C"+"\n"+"勝利条件: あなたの手番でプレイヤーを脱落させ、そのプレイヤーが3人目以上の脱落者である"+"\n"+"特殊能力: あなたの攻撃の後、直ちに自身が2ダメージを受けることによりもう一度攻撃を行える(1手番にいちどまで？)", 
+"HP11"+"\n"+"C"+"\n"+"勝利条件: 最初に脱落する。またはゲーム終了時にプレイヤーが自身ともう一人だけになる"+"\n"+"特殊能力: 手番開始時に自分のダメージを1回復できる", 
+"HP13"+"\n"+"D"+"\n"+"勝利条件: 最初に脱落する。またはすべてのバンパイアが脱落し、あなたが残っている"+"\n"+"特殊能力: プレイヤーが脱落した場合、自身のキャラクターを強制公開", 
+"HP13"+"\n"+"D"+"\n"+"勝利条件: 「タリスマン」「骨の槍」「守りのローブ」「リュックサック」のうち3つ以上を所持する"+"\n"+"特殊能力: ゲーム中一回限り、赤か青の捨て札からアイテムを一つ取ることができる"]
+
+listred=["吸血蜘蛛(強制) 自分と任意のプレイヤーに2ダメージ", "吸血蜘蛛(強制) 自分と任意のプレイヤーに2ダメージ", "爆発(強制) 二つのダイスを振り、出た目の場所にいるすべてのプレイヤーは3ダメージを受ける", "落とし穴(強制) 装備アイテム1つを誰かに渡す。持ってなければ1ダメージ受ける。", "待ち伏せ(強制) 対象プレイヤーを選択。6面ダイスを振り、1~4が出れば対象に3ダメージ", "闇の儀式(任意) ヴァンパイアなら全回復する", "バンパイアの蝙蝠(強制) 任意のプレイヤーに2ダメージを与え、自分を1回復する", "バンパイアの蝙蝠(強制) 任意のプレイヤーに2ダメージを与え、自分を1回復する", "バンパイアの蝙蝠(強制) 任意のプレイヤーに2ダメージを与え、自分を1回復する", "攻撃(強制) 任意のプレイヤーからアイテムを1つ奪う", "攻撃(強制) 任意のプレイヤーからアイテムを1つ奪う", "炎の魔法(強制) 攻撃時、対象と同じエリアに居る他のプレイヤーにも同量のダメージを与える", "アーチェリー(強制) 攻撃対象を選ぶ際に自分の居るエリア外のプレイヤーを選択する", "鉄拳(強制) 攻撃成功で追加1ダメージ", "鉄拳(強制) 攻撃成功で追加1ダメージ", "鉄拳(強制) 攻撃成功で追加1ダメージ", "鉄拳(強制) 攻撃成功で追加1ダメージ", "松明(強制) 攻撃時に4面ダイスを振り、出た目のダメージを与える"]
+listblue=["祝福(任意) あなたは2点回復する", "遠隔治療(強制) 他のプレイヤーを選び6面ダイスを振り、出た目だけそのプレイヤーを回復", "祝福(任意) あなたは2点回復する", "正体判明(強制) バンパイアかワーウルフなら公開。嘘つきバンパイアなら無効可", "時間移動(強制) あなたの手番の後、即座にもう一度手番を行う", "時間移動(強制) あなたの手番の後、即座にもう一度手番を行う", "回復(任意) ワーウルフなら体力全回複",  "エネルギーの素(任意) キャラクターがA,E,Uならダメージを全回復可能", "聖なる怒り(強制) あなた以外の全プレイヤーに2ダメージ", "守りのオーラ(強制) 現在から次の自分の手番までプレイヤーからの攻撃から守られる(魔女森やカードは喰らう)", "血の月(強制) マーカー一つを血の月マスへ送る", "魔法のコンパス(任意) 移動時、異なるエリアの任意の場所へ移動可能", "リュックサック(強制) あなたの攻撃で誰かを脱落させたならそのプレイヤーの装備をすべて奪う", "守りのローブ(強制) 他プレイヤーからの攻撃により受けるダメージが1減少", "守りのアミュレット(強制) 魔女の森からのダメージを受けない。魔女の森に移動するとさらに1ダメージ回復可能", "タリスマン(強制) カードの吸血蜘蛛、バンパイアの蝙蝠、爆発のダメージを受けない", "守りの指輪(強制) 血の月から守られる", "骨の槍(強制) 自身ワーウルフなら攻撃成功時追加で2ダメージ"]
+listgreen=["手番プレイヤーからこのカードを受け取った時、あなたがバンパイアなら1ダメージを受ける", "手番プレイヤーからこのカードを受け取った時、あなたがバンパイアなら2ダメージを受ける", "手番プレイヤーからこのカードを受け取った時、あなたがワーウルフなら1ダメージを受ける", "手番プレイヤーからこのカードを受け取った時、あなたがワーウルフなら1ダメージを受ける", "手番プレイヤーからこのカードを受け取った時、あなたがバンパイアなら以下の指示に従う。ダメージを受けていなければ1ダメージを受ける。ダメージを受けていれば1ダメージ回復する", "手番プレイヤーからこのカードを受け取った時、あなたがワーウルフなら以下の指示に従う。ダメージを受けていなければ1ダメージを受ける。ダメージを受けていれば1ダメージ回復する", "手番プレイヤーからこのカードを受け取った時、あなたが人間なら以下の指示に従う。ダメージを受けていなければ1ダメージを受ける。ダメージを受けていれば1ダメージ回復する", "手番プレイヤーからこのカードを受け取った時、あなたがバンパイアかワーウルフなら以下の指示に従う。手番プレイヤーにアイテムを一つ渡す。持っていなければ1ダメージ受ける", "手番プレイヤーからこのカードを受け取った時、あなたがバンパイアかワーウルフなら以下の指示に従う。手番プレイヤーにアイテムを一つ渡す。持っていなければ1ダメージ受ける", "手番プレイヤーからこのカードを受け取った時、あなたがワーウルフか人間なら以下の指示に従う。手番プレイヤーにアイテムを一つ渡す。持っていなければ1ダメージ受ける", "手番プレイヤーからこのカードを受け取った時、あなたがワーウルフか人間なら以下の指示に従う。手番プレイヤーにアイテムを一つ渡す。持っていなければ1ダメージ受ける", "手番プレイヤーからこのカードを受け取った時、あなたが人間かバンパイアなら以下の指示に従う。手番プレイヤーにアイテムを一つ渡す。持っていなければ1ダメージ受ける", "手番プレイヤーからこのカードを受け取った時、あなたが人間かバンパイアなら以下の指示に従う。手番プレイヤーにアイテムを一つ渡す。持っていなければ1ダメージ受ける", "手番プレイヤーからこのカードを受け取った時、あなたのキャラクターがABCEUのいずれかであれば1ダメージ受ける", "手番プレイヤーからこのカードを受け取った時、あなたのキャラクターがDFGVWのいずれかであれば2ダメージ受ける", "手番プレイヤーからこのカードを受け取った時、あなたのカードを手番プレイヤーに見せなければならない"]
+
+list1d6 = [1, 2, 3, 4, 5, 6]
+list1d4 = [1, 2, 3, 4]
+
+
+list = ["刀","扇", "薙", "銃", "忍", "傘", "書", "毒", "絡", "騎", "古", "琵", "炎", "笛", "戦", "社","経", "絆","機", "新","爪","拒", "鎌", "塵", "旗","橇","鏡","櫂","兜", "槌","嵐", "棹", "面", "勾", "金", "恐"]
 list2 = ["大気の護符","水の護符","火の護符","土の護符","イシュターの天秤","春の杖","時のブーツ","イオの財布","聖杯","信心深きサイラス","強欲のフィグリム","女預言者ナリア","驚愕の箱","物乞いの角笛","悪意のダイス","破壊者ケアン","首長のアムサグ","魔法の秘本","ラグフィールドの兜","運命の手","灰顔のルイス","イオリスのルーン方体","力の薬","夢の薬","知識の薬","命の薬","時の砂時計","壮大の錫杖","オラフの祝福の像","ヤンの忘れられた花瓶","精霊のアミュレット","光の木","アルカノ蛭","水晶球","暴食の大鍋","吸血の王冠","竜の頭蓋骨","アルゴスの悪魔","深き眼差しのタイタス","大気の精霊","泥棒フェアリー","アルスの呪われた書","使い魔の偶像","壊死のクリス","クシディットのランプ","ウルムの封印された箱","季節の鏡","ラグノールのペンダント","夜影のシド","オニスの忌まわしき魂", "大気の護符","水の護符","火の護符","水の護符","イシュターの天秤","春の杖","時のブーツ","イオの財布","聖杯","信心深きサイラス","強欲のフィグリム","女預言者ナリア","驚愕の箱","物乞いの角笛","悪意のダイス","破壊者ケアン","首長のアムサグ","魔法の秘本","ラグフィールドの兜","運命の手","灰顔のルイス","イオリスのルーン方体","力の薬","夢の薬","知識の薬","命の薬","時の砂時計","壮大の錫杖","オラフの祝福の像","ヤンの忘れられた花瓶","精霊のアミュレット","光の木","アルカノ蛭","水晶球","暴食の大鍋","吸血の王冠","竜の頭蓋骨","アルゴスの悪魔","深き眼差しのタイタス","大気の精霊","泥棒フェアリー","アルスの呪われた書","使い魔の偶像","壊死のクリス","クシディットのランプ","ウルムの封印された箱","季節の鏡","ラグノールのペンダント","夜影のシド","オニスの忌まわしき魂"]
-list3 = ["吸血の王冠", "精霊のアミュレット", "水晶球", "力の薬"]
+listdraw = ["吸血の王冠", "精霊のアミュレット", "水晶球", "力の薬"]
 listN = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-list6=["	a-基本	2	寄付		"	,
+
+listhato=["	a-基本	2	寄付		"	,
 "	a-基本	2	願いの泉		"	,
 "	a-基本	2	斥候		"	,
 "	a-基本	2	早馬		"	,
@@ -110,257 +191,16 @@ list6=["	a-基本	2	寄付		"	,
 "	f-星天	5	富豪の愛娘		"
 ]
 
-list7=["	ほら吹き	"	,
-"	収入役	"	,
-"	愛人	"	,
-"	炭焼き	"	,
-"	畑番	"	,
-"	出来高労働者	"	,
-"	柴結び	"	,
-"	農場管理	"	,
-"	屋根がけ	"	,
-"	葦集め	"	,
-"	レンガ職人	"	,
-"	イチゴ集め	"	,
-"	木こり	"	,
-"	羊農	"	,
-"	小売人	"	,
-"	露天商の女	"	,
-"	家畜追い	"	,
-"	季節労働者	"	,
-"	柵管理人	"	,
-"	鋤手	"	,
-"	左官屋	"	,
-"	君主	"	,
-"	学者	"	,
-"	キノコ探し	"	,
-"	ブリキ職人	"	,
-"	石切り	"	,
-"	乳母	"	,
-"	彫刻家	"	,
-"	パン職人	"	,
-"	居候	"	,
-"	資材商人	"	,
-"	レンガ貼り	"	,
-"	柵見張り	"	,
-"	庭師	"	,
-"	族長	"	,
-"	材木買い付け人	"	,
-"	大工	"	,
-"	種屋	"	,
-"	ネズミ捕り	"	,
-"	商人	"	,
-"	鋤鍛冶	"	,
-"	木材運び	"	,
-"	レンガ大工	"	,
-"	柵運び	"	,
-"	畑商人	"	,
-"	レンガ混ぜ	"	,
-"	工場主	"	,
-"	族長の娘	"	,
-"	ギルド長	"	,
-"	村長	"	,
-"	養父母	"	,
-"	家庭教師	"	,
-"	鋤職人	"	,
-"	牛の飼育士	"	,
-"	代官	"	,
-"	行商人	"	,
-"	木材配り	"	,
-"	石運び	"	,
-"	木材集め	"	,
-"	井戸掘り	"	,
-"	柵立て	"	,
-"	火酒作り	"	,
-"	八百屋	"	,
-"	有機農業者	"	,
-"	共同体長	"	,
-"	レンガ運び	"	,
-"	改築屋	"	,
-"	革なめし工	"	,
-"	大農場管理人	"	,
-"	販売人	"	,
-"	召使	"	,
-"	レンガ積み	"	,
-"	修理屋	"	,
-"	畜殺人	"	,
-"	村の長老	"	,
-"	小作人	"	,
-"	てき屋	"	,
-"	自由農夫	"	,
-"	網漁師	"	,
-"	港湾労働者	"	,
-"	ブラシ作り	"	,
-"	漁師	"	,
-"	建築士	"	,
-"	執事	"	,
-"	石工	"	,
-"	陶工	"	,
-"	水運び	"	,
-"	石持ち	"	,
-"	托鉢僧	"	,
-"	木大工	"	,
-"	梁打ち	"	,
-"	肉屋	"	,
-"	調教師	"	,
-"	畑農	"	,
-"	厩番	"	,
-"	収穫手伝い	"	,
-"	醸造師	"	,
-"	旋盤職人	"	,
-"	大学者	"	,
-"	家具職人	"	,
-"	パン屋	"	,
-"	メイド	"	,
-"	厩作り	"	,
-"	林務官	"	,
-"	小農夫	"	,
-"	精肉屋	"	,
-"	畑作人	"	,
-]
 
-list8=["	レンガの屋根	"	,
-"	木の家増築	"	,
-"	カブ畑	"	,
-"	石切り場	"	,
-"	酒場	"	,
-"	葦の家	"	,
-"	ヤギ	"	,
-"	木挽き台	"	,
-"	レンガの柱	"	,
-"	毛皮	"	,
-"	林	"	,
-"	斧	"	,
-"	牛車	"	,
-"	簗	"	,
-"	搾乳台	"	,
-"	レンガ置き場	"	,
-"	カヌー	"	,
-"	小麦車	"	,
-"	地固め機	"	,
-"	ヴィラ	"	,
-"	ほうき	"	,
-"	柄付き網	"	,
-"	穀物スコップ	"	,
-"	寝室	"	,
-"	はしご	"	,
-"	本棚	"	,
-"	個人の森	"	,
-"	織機	"	,
-"	白鳥の湖	"	,
-"	檻	"	,
-"	小牧場	"	,
-"	葦の池	"	,
-"	レンガ杭	"	,
-"	果物の木	"	,
-"	レンガの家増築	"	,
-"	鋤車	"	,
-"	畑	"	,
-"	温室	"	,
-"	投げ縄	"	,
-"	木骨の小屋	"	,
-"	いかだ	"	,
-"	レタス畑	"	,
-"	簡易かまど	"	,
-"	調理場	"	,
-"	プランター	"	,
-"	ミツバチの巣	"	,
-"	折り返し鋤	"	,
-"	調理コーナー	"	,
-"	突き鋤	"	,
-"	森の牧場	"	,
-"	石ばさみ	"	,
-"	書き机	"	,
-"	村の井戸	"	,
-"	石の家増築	"	,
-"	木の宝石箱	"	,
-"	ハト小屋	"	,
-"	パン焼き桶	"	,
-"	石車	"	,
-"	鴨の池	"	,
-"	木のスリッパ	"	,
-"	釣竿	"	,
-"	耕運鋤	"	,
-"	レンガ道	"	,
-"	鉤型鋤	"	,
-"	葦の交換	"	,
-"	イチゴ花壇	"	,
-"	ガチョウ池	"	,
-"	穀物の束	"	,
-"	鶏小屋	"	,
-"	木材荷車	"	,
-"	柴屋根	"	,
-"	聖マリア像	"	,
-"	林道	"	,
-"	わら小屋	"	,
-"	ウマ	"	,
-"	家畜庭	"	,
-"	穀物倉庫	"	,
-"	喜捨	"	,
-"	木のクレーン	"	,
-"	パン焼き暖炉	"	,
-"	かめ	"	,
-"	くまで	"	,
-"	畜殺場	"	,
-"	へら	"	,
-"	かいば桶	"	,
-"	石の交換	"	,
-"	陶器	"	,
-"	建築資材	"	,
-"	離れのトイレ	"	,
-"	薬草畑	"	,
-"	親切な隣人	"	,
-"	くびき	"	,
-"	建築用木材	"	,
-"	パン焼き部屋	"	,
-"	牧人の杖	"	,
-"	パン焼き小屋	"	,
-"	鯉の池	"	,
-"	じゃがいも堀り	"	,
-"	製材所	"	,
-"	荷車	"	,
-"	動物園	"	,
-"	ゲスト	"	,
-"	マメ畑	"	,
-"	火酒製造所	"	,
-"	平地	"	,
-"	厩	"	,
-"	木の暖炉	"	,
-"	肥溜め	"	,
-"	馬鋤	"	,
-"	酪農場	"	,
-"	猪の飼育	"	,
-"	家畜市場	"	,
-"	強力餌	"	,
-"	風車小屋	"	,
-"	舗装道路	"	,
-"	スパイス	"	,
-"	パン焼き棒	"	,
-"	水飲み場	"	,
-"	脱穀そり	"	,
-"	焼き串	"	,
-"	露店	"	,
-"	堆肥	"	,
-"	家畜の餌	"	,
-"	三つ足やかん	"	,
-"	醸造所	"	,
-"	脱穀棒	"	,
-"	かご	"	,
-"	乾燥小屋	"	,
-"	手挽き臼	"	,
-"	かんな	"	,
-"	雑木林	"	,
-"	がらがら	"	,
-"	角笛	"	,
-"	石臼	"	,
-"	別荘	"	,
-"	撹乳器	"	,
-"	週末市場	"	,
-"	糸巻き棒	"	,
-"	水車	"	,
-]
+start = 0
+Hard = 0
 
-
+@client.event
+async def on_ready():
+    print('Logged in as')
+    print(client.user.name)
+    print(client.user.id)
+    print('------')
 
 @client.event
 async def on_message(message):
@@ -389,31 +229,16 @@ async def on_message(message):
     if message.content.startswith("uranai"):
         if client.user != message.author:
             random.shuffle(list2)
-            random.shuffle(list3)
-            m = message.author.name + "さんの今日の運勢は" + list3[0] + "で"+ list2[0] + "を引くくらいの運勢です。"
-            await message.channel.send(m)
-
-
-
-    if message.content.startswith("pick"):
-        if client.user != message.author:
-            random.shuffle(listN)
-            m = "左から" + str(listN[0]) + "番目をピックしましょう！"
+            random.shuffle(listdraw)
+            m = message.author.name + "さんの今日の運勢は" + listdraw[0] + "で"+ list2[0] + "を引くくらいの運勢です。"
             await message.channel.send(m)
 
     if message.content.startswith("hato"):
         if client.user != message.author:
-            random.shuffle(list6)
-            newlist6 = [list6[0], list6[1], list6[2],list6[3], list6[4], list6[5],list6[6], list6[7], list6[8], list6[9] ]
-            newlist6.sort()
-            m = "__ランダム10種__"+"\n"+"\n"+str(newlist6[0])+"\n"+str(newlist6[1])+"\n"+str(newlist6[2])+"\n"+str(newlist6[3])+"\n"+str(newlist6[4])+"\n"+str(newlist6[5])+"\n"+str(newlist6[6])+"\n"+str(newlist6[7])+"\n"+str(newlist6[8])+"\n"+str(newlist6[9])
-            await message.channel.send(m)
-
-    if message.content.startswith("ag3"):
-        if client.user != message.author:
-            random.shuffle(list7)
-            random.shuffle(list8)
-            m = message.author.name + "さんの束"+"\n"+"\n"+"__職業__"+"\n"+list7[0]+"・"+list7[1]+"・"+list7[2]+"・"+list7[3]+"・"+list7[4]+"・"+list7[5]+"・"+list7[6]+"\n"+"\n"+"__小進歩__"+"\n"+list8[0]+"・"+list8[1]+"・"+list8[2]+"・"+list8[3]+"・"+list8[4]+"・"+list8[5]+"・"+list8[6]
+            random.shuffle(listhato)
+            newlisthato = [listhato[0], listhato[1], listhato[2],listhato[3], listhato[4], listhato[5],listhato[6], listhato[7], listhato[8], listhato[9] ]
+            newlisthato.sort()
+            m = "__ランダム10種__"+"\n"+"\n"+str(newlisthato[0])+"\n"+str(newlisthato[1])+"\n"+str(newlisthato[2])+"\n"+str(newlisthato[3])+"\n"+str(newlisthato[4])+"\n"+str(newlisthato[5])+"\n"+str(newlisthato[6])+"\n"+str(newlisthato[7])+"\n"+str(newlisthato[8])+"\n"+str(newlisthato[9])
             await message.channel.send(m)
 
     if message.content.startswith("ping"):
@@ -423,9 +248,521 @@ async def on_message(message):
 
     if message.content.startswith("name"):
         if client.user != message.author:
-            m = "Torisan"
+            m = "igramulsan"
             await message.channel.send(m)
 
 
+    global startshadow, listv, listw, listh, listred, listblue, listgreen, list3, list4, list5, list6, list7, list8
+    if message.content=="シャドハン" and startshadow ==0:
+        startshadow = 1
+        m = "ｼｬﾄﾞﾊﾝ ｶｲｼ ｼﾀ｡"+"\n"+"\n"+"**m**: move。移動時に使用。"+"\n"+"**a**: attack。ターン終了時に使用。"+"\n"+"**r, g, b**: red, green, blue。山札引き時に使用。"+"\n"+"**1d4, 1d6**: 4面・6面ダイスを振るときに使用。"
+        await message.channel.send(m)
 
-client.run(token)
+
+    if message.content == "role3" and startshadow == 1:
+        m = ''.join(random.sample(list3, 1))
+        list3.remove(m)
+        await message.channel.send(m)
+
+    if message.content == "role4" and startshadow == 1:
+        m = ''.join(random.sample(list4, 1))
+        list4.remove(m)
+        await message.channel.send(m)
+
+    if message.content == "role5" and startshadow == 1:
+        m = ''.join(random.sample(list5, 1))
+        list5.remove(m)
+        await message.channel.send(m)
+
+    if message.content == "role6" and startshadow == 1:
+        m = ''.join(random.sample(list6, 1))
+        list6.remove(m)
+        await message.channel.send(m)
+
+    if message.content == "role7" and startshadow == 1:
+        m = ''.join(random.sample(list7, 1))
+        list7.remove(m)
+        await message.channel.send(m)
+
+    if message.content == "role8" and startshadow == 1:
+        m = ''.join(random.sample(list8, 1))
+        list8.remove(m)
+        await message.channel.send(m)
+
+    if message.content == "v" and startshadow == 1:
+        m = ''.join(random.sample(listv, 1))
+        listv.remove(m)
+        await message.channel.send(m)
+
+    if message.content == "w" and startshadow == 1:
+        m = ''.join(random.sample(listw, 1))
+        listw.remove(m)
+        await message.channel.send(m)
+
+    if message.content == "h" and startshadow == 1:
+        m = ''.join(random.sample(listh, 1))
+        listh.remove(m)
+        await message.channel.send(m)
+
+    if message.content == "r" and startshadow == 1:
+        m = ''.join(random.sample(listred, 1))
+        listred.remove(m)
+        await message.channel.send(m)
+
+    if message.content == "b" and startshadow == 1:
+        m = ''.join(random.sample(listblue, 1))
+        listblue.remove(m)
+        await message.channel.send(m)
+
+    if message.content == "g" and startshadow == 1:
+        m = ''.join(random.sample(listgreen, 1))
+        listgreen.remove(m)
+        await message.channel.send(m)
+
+    if message.content =="m" and startshadow ==1:
+        m = str(random.choice(list1d6)+random.choice(list1d4))+"へ移動"
+        await message.channel.send(m)
+
+    if message.content =="a" and startshadow ==1:
+        m = message.author.name+"さんの攻撃！"+str(abs(random.choice(list1d6)-random.choice(list1d4)))+"ダメージを与えた！"
+        await message.channel.send(m)
+
+    if message.content =="1d6" and startshadow ==1:
+        m = random.choice(list1d6)
+        await message.channel.send(m)
+
+    if message.content =="1d4" and startshadow ==1:
+        m = random.choice(list1d4)
+        await message.channel.send(m)
+
+
+
+    if message.content == "ends":
+        startshadow = 0
+        list3=["あなたはバンパイア陣営です。vと入力してください。", "あなたはワーウルフ陣営です。wと入力してください。", "あなたは人間陣営です。hと入力してください。"]
+        list4=["あなたはバンパイア陣営です。vと入力してください。", "あなたはワーウルフ陣営です。wと入力してください。","あなたはバンパイア陣営です。vと入力してください。", "あなたはワーウルフ陣営です。wと入力してください。"]
+        list5=["あなたはバンパイア陣営です。vと入力してください。", "あなたはワーウルフ陣営です。wと入力してください。","あなたはバンパイア陣営です。vと入力してください。", "あなたはワーウルフ陣営です。wと入力してください。","あなたは人間陣営です。hと入力してください。"]
+        list6=["あなたはバンパイア陣営です。vと入力してください。", "あなたはワーウルフ陣営です。wと入力してください。","あなたはバンパイア陣営です。vと入力してください。", "あなたはワーウルフ陣営です。wと入力してください。","あなたは人間陣営です。hと入力してください。","あなたは人間陣営です。hと入力してください。"]
+        list7=["あなたはバンパイア陣営です。vと入力してください。", "あなたはワーウルフ陣営です。wと入力してください。","あなたはバンパイア陣営です。vと入力してください。", "あなたはワーウルフ陣営です。wと入力してください。","あなたは人間陣営です。hと入力してください。","あなたは人間陣営です。hと入力してください。", "あなたは人間陣営です。hと入力してください。"]
+        list8=["あなたはバンパイア陣営です。vと入力してください。", "あなたはワーウルフ陣営です。wと入力してください。","あなたはバンパイア陣営です。vと入力してください。", "あなたはワーウルフ陣営です。wと入力してください。","あなたはバンパイア陣営です。vと入力してください。", "あなたはワーウルフ陣営です。wと入力してください。","あなたは人間陣営です。hと入力してください。","あなたは人間陣営です。hと入力してください。"]
+        listv=["HP11"+"\n"+"U"+"\n"+"勝利条件: 全てのワーウルフを倒す"+"\n"+"特殊能力: 手番の開始時に「墓場」にいるプレイヤー一人を選び3ダメージを与える", 
+"HP11"+"\n"+"U"+"\n"+"勝利条件: 全てのワーウルフを倒す"+"\n"+"特殊能力: 緑のカードを受け取った際、答えを偽ることができる。公開の必要はない。正体判明の効果を受けない。",
+"HP13"+"\n"+"V"+"\n"+"勝利条件: 全てのワーウルフを倒す"+"\n"+"特殊能力: 攻撃時に4面ダイスを振り、出た目のダメージを与える", 
+"HP13"+"\n"+"V"+"\n"+"勝利条件: 全てのワーウルフを倒す"+"\n"+"特殊能力: 自身の攻撃により誰かにダメージを与えた場合、直ちに自分のダメージを2回復する", 
+"HP14"+"\n"+"W"+"\n"+"勝利条件: 全てのワーウルフを倒す"+"\n"+"特殊能力: ゲーム中一回限り、自分の手番の後で追加手番を脱落したプレイヤー一人につき一回行える", 
+"HP14"+"\n"+"W"+"\n"+"勝利条件: 全てのワーウルフを倒す"+"\n"+"特殊能力: 誰かがあなたを攻撃してきた場合、そのあとでそのプレイヤーに対し攻撃することができる"]
+        listw=["HP10"+"\n"+"E"+"\n"+"勝利条件: 全てのバンパイアを倒す"+"\n"+"特殊能力: 移動する際にダイスを振らずに左または右に隣接する場所に移動することができる。", 
+"HP10"+"\n"+"E"+"\n"+"勝利条件: 全てのバンパイアを倒す"+"\n"+"特殊能力: ゲーム中一回限り、自分の手番の開始時に誰か一人のプレイヤーを選び、そのプレイヤーの特殊能力をゲーム終了時まで封印する。", 
+"HP12"+"\n"+"F"+"\n"+"勝利条件: 全てのバンパイアを倒す"+"\n"+"特殊能力: ゲーム中一回限り、自分の手番開始時に誰か一人を選び、1d6のダメージを与える", 
+"HP12"+"\n"+"F"+"\n"+"勝利条件: 全てのバンパイアを倒す"+"\n"+"特殊能力: ゲーム中一回限り、自分の手番開始時に他のプレイヤーのマーカーを血の月マスに送る", 
+"HP14"+"\n"+"G"+"\n"+"勝利条件: 全てのバンパイアを倒す"+"\n"+"特殊能力: ゲーム中一回限り、自分の手番終了時に次の自分の手番開始時までダメージを受けないことを宣言できる", 
+"HP14"+"\n"+"G"+"\n"+"勝利条件: 全てのバンパイアを倒す"+"\n"+"特殊能力: ゲーム中一回限り、自分の手番開始時に誰か一人を選び、1d4のダメージを与える"]
+        listh=["HP8"+"\n"+"A"+"\n"+"勝利条件: ゲーム終了時に脱落していない"+"\n"+"特殊能力: ゲーム中一回限り自分のダメージを全て回復可能",
+"HP8"+"\n"+"A"+"\n"+"勝利条件: ゲーム終了時に脱落していない"+"\n"+"特殊能力: ゲーム中一回限り自分のダメージを全て回復可能", 
+"HP8"+"\n"+"A"+"\n"+"勝利条件: 右隣りのプレイヤーの勝利"+"\n"+"特殊能力: ゲーム中一回限り勝利条件を「左隣りのプレイヤーの勝利」に変更可能", 
+"HP10"+"\n"+"B"+"\n"+"勝利条件: あなたの攻撃により「受けられるダメージが13以上」のプレイヤーを脱落させる。またはゲーム終了時にストーンサークルにコマがある"+"\n"+"特殊能力: あなたの攻撃により「受けられるダメージが12以下」のプレイヤーを脱落させた場合、自身のキャラクターを強制公開", 
+"HP10"+"\n"+"B"+"\n"+"勝利条件: 4つ以上のアイテムを持つ"+"\n"+"特殊能力: あなたの攻撃によりプレイヤーを脱落させた場合、そのプレイヤーのアイテムをすべて奪うことができる", 
+"HP11"+"\n"+"C"+"\n"+"勝利条件: あなたの手番でプレイヤーを脱落させ、そのプレイヤーが3人目以上の脱落者である"+"\n"+"特殊能力: あなたの攻撃の後、直ちに自身が2ダメージを受けることによりもう一度攻撃を行える(1手番にいちどまで？)", 
+"HP11"+"\n"+"C"+"\n"+"勝利条件: 最初に脱落する。またはゲーム終了時にプレイヤーが自身ともう一人だけになる"+"\n"+"特殊能力: 手番開始時に自分のダメージを1回復できる", 
+"HP13"+"\n"+"D"+"\n"+"勝利条件: 最初に脱落する。またはすべてのバンパイアが脱落し、あなたが残っている"+"\n"+"特殊能力: プレイヤーが脱落した場合、自身のキャラクターを強制公開", 
+"HP13"+"\n"+"D"+"\n"+"勝利条件: 「タリスマン」「骨の槍」「守りのローブ」「リュックサック」のうち3つ以上を所持する"+"\n"+"特殊能力: ゲーム中一回限り、赤か青の捨て札からアイテムを一つ取ることができる"]
+        listred=["吸血蜘蛛(強制) 自分と任意のプレイヤーに2ダメージ", "吸血蜘蛛(強制) 自分と任意のプレイヤーに2ダメージ", "爆発(強制) 二つのダイスを振り、出た目の場所にいるすべてのプレイヤーは3ダメージを受ける", "落とし穴(強制) 装備アイテム1つを誰かに渡す。持ってなければ1ダメージ受ける。", "待ち伏せ(強制) 対象プレイヤーを選択。6面ダイスを振り、1~4が出れば対象に3ダメージ", "闇の儀式(任意) ヴァンパイアなら全回復する", "バンパイアの蝙蝠(強制) 任意のプレイヤーに2ダメージを与え、自分を1回復する", "バンパイアの蝙蝠(強制) 任意のプレイヤーに2ダメージを与え、自分を1回復する", "バンパイアの蝙蝠(強制) 任意のプレイヤーに2ダメージを与え、自分を1回復する", "攻撃(強制) 任意のプレイヤーからアイテムを1つ奪う", "攻撃(強制) 任意のプレイヤーからアイテムを1つ奪う", "炎の魔法(強制) 攻撃時、対象と同じエリアに居る他のプレイヤーにも同量のダメージを与える", "アーチェリー(強制) 攻撃対象を選ぶ際に自分の居るエリア外のプレイヤーを選択する", "鉄拳(強制) 攻撃成功で追加1ダメージ", "鉄拳(強制) 攻撃成功で追加1ダメージ", "鉄拳(強制) 攻撃成功で追加1ダメージ", "鉄拳(強制) 攻撃成功で追加1ダメージ", "松明(強制) 攻撃時に4面ダイスを振り、出た目のダメージを与える"]
+        listblue=["祝福(任意) あなたは2点回復する", "遠隔治療(強制) 他のプレイヤーを選び6面ダイスを振り、出た目だけそのプレイヤーを回復", "祝福(任意) あなたは2点回復する", "正体判明(強制) バンパイアかワーウルフなら公開。嘘つきバンパイアなら無効可", "時間移動(強制) あなたの手番の後、即座にもう一度手番を行う", "時間移動(強制) あなたの手番の後、即座にもう一度手番を行う", "回復(任意) ワーウルフなら体力全回複",  "エネルギーの素(任意) キャラクターがA,E,Uならダメージを全回復可能", "聖なる怒り(強制) あなた以外の全プレイヤーに2ダメージ", "守りのオーラ(強制) 現在から次の自分の手番までプレイヤーからの攻撃から守られる(魔女森やカードは喰らう)", "血の月(強制) マーカー一つを血の月マスへ送る", "魔法のコンパス(任意) 移動時、異なるエリアの任意の場所へ移動可能", "リュックサック(強制) あなたの攻撃で誰かを脱落させたならそのプレイヤーの装備をすべて奪う", "守りのローブ(強制) 他プレイヤーからの攻撃により受けるダメージが1減少", "守りのアミュレット(強制) 魔女の森からのダメージを受けない。魔女の森に移動するとさらに1ダメージ回復可能", "タリスマン(強制) カードの吸血蜘蛛、バンパイアの蝙蝠、爆発のダメージを受けない", "守りの指輪(強制) 血の月から守られる", "骨の槍(強制) 自身ワーウルフなら攻撃成功時追加で2ダメージ"]
+        listgreen=["手番プレイヤーからこのカードを受け取った時、あなたがバンパイアなら1ダメージを受ける", "手番プレイヤーからこのカードを受け取った時、あなたがバンパイアなら2ダメージを受ける", "手番プレイヤーからこのカードを受け取った時、あなたがワーウルフなら1ダメージを受ける", "手番プレイヤーからこのカードを受け取った時、あなたがワーウルフなら1ダメージを受ける", "手番プレイヤーからこのカードを受け取った時、あなたがバンパイアなら以下の指示に従う。ダメージを受けていなければ1ダメージを受ける。ダメージを受けていれば1ダメージ回復する", "手番プレイヤーからこのカードを受け取った時、あなたがワーウルフなら以下の指示に従う。ダメージを受けていなければ1ダメージを受ける。ダメージを受けていれば1ダメージ回復する", "手番プレイヤーからこのカードを受け取った時、あなたが人間なら以下の指示に従う。ダメージを受けていなければ1ダメージを受ける。ダメージを受けていれば1ダメージ回復する", "手番プレイヤーからこのカードを受け取った時、あなたがバンパイアかワーウルフなら以下の指示に従う。手番プレイヤーにアイテムを一つ渡す。持っていなければ1ダメージ受ける", "手番プレイヤーからこのカードを受け取った時、あなたがバンパイアかワーウルフなら以下の指示に従う。手番プレイヤーにアイテムを一つ渡す。持っていなければ1ダメージ受ける", "手番プレイヤーからこのカードを受け取った時、あなたがワーウルフか人間なら以下の指示に従う。手番プレイヤーにアイテムを一つ渡す。持っていなければ1ダメージ受ける", "手番プレイヤーからこのカードを受け取った時、あなたがワーウルフか人間なら以下の指示に従う。手番プレイヤーにアイテムを一つ渡す。持っていなければ1ダメージ受ける", "手番プレイヤーからこのカードを受け取った時、あなたが人間かバンパイアなら以下の指示に従う。手番プレイヤーにアイテムを一つ渡す。持っていなければ1ダメージ受ける", "手番プレイヤーからこのカードを受け取った時、あなたが人間かバンパイアなら以下の指示に従う。手番プレイヤーにアイテムを一つ渡す。持っていなければ1ダメージ受ける", "手番プレイヤーからこのカードを受け取った時、あなたのキャラクターがABCEUのいずれかであれば1ダメージ受ける", "手番プレイヤーからこのカードを受け取った時、あなたのキャラクターがDFGVWのいずれかであれば2ダメージ受ける", "手番プレイヤーからこのカードを受け取った時、あなたのカードを手番プレイヤーに見せなければならない"]
+
+        await message.channel.send("ｼｬﾄﾞﾊﾝ ｼｭｳﾘｮｳ ｼﾀ。ｵｶﾀﾂﾞｹ..(((ノ〇▲)ノ")
+
+    global start, pile, attack, defense, bottrash, myhand, abilityA, abilityB, ability1, ability2, ability3, bothand, player, botactive, Hard
+    if message.content == "hard":
+        Hard = 1
+        await message.channel.send("【Hard mode】に変更しました。"+"\n"+"レゾナンスリング成功条件: 能力3つ当て")
+
+    if message.content == "normal":
+        Hard = 0
+        await message.channel.send("【normal mode】に変更しました。"+"\n"+"レゾナンスリング成功条件: 能力3つ中2つ当て")
+    
+    
+    if message.content=="サイレントファントム" and start ==0:
+        start = 1
+        #bot側能力決定
+        botability = random.sample(abilityA, k = 3)
+        player = random.sample(abilityB, k = 3)
+        ability1 = botability[0]
+        ability2 = botability[1]
+        ability3 = botability[2]
+
+        #bot初期札1枚目
+        m1 = ''.join(random.sample(pile, k=1))
+        pile.remove(m1)
+
+        if m1.startswith("攻撃"):
+            attack.append(m1)
+
+
+        if m1.startswith("防御"):
+            defense.append(m1)
+        
+        #bot初期札2枚目
+        m2 = ''.join(random.sample(pile, k=1))
+        pile.remove(m2)
+
+        if m2.startswith("攻撃"):
+            attack.append(m2)
+
+        if m2.startswith("防御"):
+            defense.append(m2)
+
+        bothand = attack+defense
+        
+        #プレイヤー側初期札2枚
+        m3 = ''.join(random.sample(pile, k=1))
+        pile.remove(m3)
+        myhand.append(m3)
+
+        m4 = ''.join(random.sample(pile, k=1))
+        pile.remove(m4)
+        myhand.append(m4)
+
+        m = "サイレントファントムを開始しました。各コマンドは『help』と入力すれば見れます。"+"\n"+"\n"+"あなたの能力は"+"**"+player[0]+player[1]+player[2]+"**"+"です。"+"\n"+"\n"+"あなたの手札は"+"\n"+"\n"+m3+m4+"です。"
+        await message.channel.send(m)
+
+    #bot側ターンを"you"コマンドで開始
+    if (message.content == "you" and start == 1) or (message.content == "you" and start == 2) or (message.content == "you" and start == 6) or (message.content == "you" and start == 8) or (message.content == "you" and start == 15) or (message.content == "you" and start == 16):
+        m = ''.join(random.sample(pile, k=1))
+        pile.remove(m)
+
+        if m.startswith("攻撃"):
+            attack.append(m)
+
+        if m.startswith("防御"):
+            defense.append(m)
+        
+        bothand = attack+defense
+        start = 3
+
+    if start == 3:
+        botactivehand = [s for s in attack if (ability1 in s) or (ability2 in s) or (ability3 in s)]
+
+        if len(botactivehand) >= 1 and start == 3:
+            me = botactivehand[0]
+            attack.remove(me)
+            bottrash.append(me)
+            start = 4
+            bothand = attack+defense
+            await message.channel.send(me+"を使います。")
+
+        elif len(botactivehand) == 0 and start == 3:
+            start = 4
+            bothand = attack+defense
+            await message.channel.send("カードを使わずターン終了します。")
+
+    if message.content == "yourhand" and start == 4:
+        m = ''.join(bothand)
+        await message.channel.send(m)
+
+    if (message.content == "myhand" and start == 4) or (message.content == "myhand" and start == 9):
+        m = ''.join(myhand)
+        await message.channel.send(m)
+
+
+    if message.content.startswith("防御") and start == 4:
+        if client.user != message.author:
+            bothand = attack+defense
+            start = 9
+            for name in myhand:
+                if message.content in name:
+                    myhand.remove(name)
+                    await message.channel.send("防御札を確認しました。")
+                    break
+
+    if message.content == "yourunmei" and start == 9:
+        if len(bothand) >=1:
+            ma = bothand[0]
+
+            for x in attack:
+                if ma in x:
+                    attack.remove(x)
+                    break
+
+            for x in defense:
+                if ma in x:
+                    defense.remove(x)
+                    break
+
+            m = ''.join(random.sample(pile, k=1))
+            pile.remove(m)
+            start = 11
+            await message.channel.send("あなたは"+ma+"を見て山札底に置きました。"+"\n"+"私はカードを1枚引きました。")
+
+            if m.startswith("攻撃") and start ==11:
+                start = 12
+                attack.append(m)
+
+            elif m.startswith("防御") and start ==11:
+                start = 12
+                defense.append(m)
+
+            bothand = attack+defense
+
+
+        if len(bothand) == 0 and start ==9:
+            start = 12
+            await message.channel.send("私はカードを持っていないので、運命干渉は起こりませんでした。") 
+
+
+
+    if (message.content == "myturn" and start == 4) or (message.content == "myturn" and start == 9) or (message.content == "myturn" and start == 8) or (message.content == "myturn" and start == 12) or (message.content == "myturn" and start == 15) or (message.content == "myturn" and start == 16):
+        start = 2
+        m = ''.join(random.sample(pile, k=1))
+        pile.remove(m)
+        myhand.append(m)
+        await message.channel.send("あなたは"+"\n"+"\n"+m+"を引きました。")
+
+    if message.content == "yourhand" and start == 2:
+        m = ''.join(bothand)
+        await message.channel.send(m)
+
+    if message.content == "myhand" and start == 2:
+        m = ''.join(myhand)
+        await message.channel.send(m)
+
+    if message.content == "reso" and start == 2 and Hard == 0:
+        start = 5
+        await message.channel.send("レゾナンスリング宣言を確認しました。私の能力名を電熱念運空精の中から2つ書いてください。"+"\n"+"例: 熱運")
+        return
+
+    if (message.content == ability1+ability2 and start ==5) or (message.content == ability2+ability3 and start ==5) or (message.content == ability1+ability3 and start ==5) or (message.content == ability2+ability1 and start ==5) or (message.content == ability3+ability2 and start ==5) or (message.content == ability3+ability1 and start ==5):
+        if client.user != message.author:
+            start = 1
+            await message.channel.send("レゾナンスリング成功！あなたの勝利です！"+"\n"+"能力:"+ability1+ability2+ability3)
+
+    if message.content == "reso" and start == 2 and Hard == 1:
+        start = 20
+        await message.channel.send("【hard mode】"+"\n"+"レゾナンスリング宣言を確認しました。私の能力名を電熱念運空精の中から3つ書いてください。"+"\n"+"例: 電熱運")
+        return
+
+    if (message.content == ability1+ability2+ability3 and start ==20) or (message.content == ability2+ability3+ability1 and start ==20) or (message.content == ability1+ability3+ability2 and start ==20) or (message.content == ability2+ability1+ability3 and start ==20) or (message.content == ability3+ability2+ability1 and start ==20) or (message.content == ability3+ability1+ability2 and start ==20):
+        if client.user != message.author:
+            start = 1
+            await message.channel.send("レゾナンスリング大成功！あなたの完全勝利です！"+"\n"+"能力:"+ability1+ability2+ability3)
+
+    if message.content != ability1+ability2 and start ==5 or message.content != ability2+ability3 and start ==5 or message.content != ability1+ability3 and start ==5 or message.content != ability2+ability1 and start ==5 or message.content != ability3+ability2 and start ==5 or message.content != ability3+ability1 and start ==5:
+        if client.user != message.author:
+            start = 1
+            await message.channel.send("レゾナンスリング失敗、5ダメージを受けてください。")
+
+    if (message.content != ability1+ability2+ability3 and start ==20) or (message.content != ability2+ability3+ability1 and start ==20) or (message.content != ability1+ability3+ability2 and start ==20) or (message.content != ability2+ability1+ability3 and start ==20) or (message.content != ability3+ability2+ability1 and start ==20) or (message.content != ability3+ability1+ability2 and start ==20):
+        if client.user != message.author:
+            start = 1
+            await message.channel.send("レゾナンスリング失敗、5ダメージを受けてください。")
+
+    if message.content.startswith("攻撃") and start == 2:
+        if client.user != message.author:
+            botactivehand = [s for s in defense if (ability1 in s) or (ability2 in s) or (ability3 in s)]
+            start = 1
+            for name in myhand:
+                if message.content in name:
+                    myhand.remove(name)
+
+            
+                    if "防御不可" in name:
+                        start = 6
+                        await message.channel.send("防御不可により手札は使いません。")
+                    break
+
+            if len(botactivehand) >= 1 and start ==1:
+                me = botactivehand[0]
+                defense.remove(me)
+                bottrash.append(me)
+                bothand = attack+defense
+                start = 6
+                await message.channel.send(me+"を使います。")
+
+
+            elif len(botactivehand) == 0 and start ==1:
+                start = 6
+                await message.channel.send("防御は使いません。")
+                
+
+    if message.content == "yourhand" and start == 6:
+        m = ''.join(bothand)
+        await message.channel.send(m)
+
+    if message.content == "myhand" and start == 6:
+        m = ''.join(myhand)
+        await message.channel.send(m)
+
+    if message.content == "yourunmei" and start == 6:
+        if len(bothand) >=1:
+            ma = bothand[0]
+
+            for x in attack:
+                if ma in x:
+                    attack.remove(x)
+                    break
+
+            for x in defense:
+                if ma in x:
+                    defense.remove(x)
+                    break
+
+
+            m = ''.join(random.sample(pile, k=1))
+            pile.remove(m)
+            start = 7
+            await message.channel.send("あなたは"+ma+"を見て山札底に置きました。"+"\n"+"私はカードを1枚引きました。")
+
+            if m.startswith("攻撃") and start ==7:
+                start = 8
+                attack.append(m)
+
+            elif m.startswith("防御") and start ==7:
+                start = 8
+                defense.append(m)
+
+            bothand = attack+defense
+
+
+        if len(bothand) == 0 and start ==6:
+            start = 8
+            await message.channel.send("私はカードを持っていないので、運命変転は起こりませんでした。")  
+
+    #ランダムでmyhandからリムーブ、pileからランダムドロー、pileからリムーブ、何が抜かれて何を引いたかメッセージ
+    if (message.content == "myunmei" and start == 4) or (message.content == "myunmei" and start == 9) or (message.content == "myunmei" and start ==6) or (message.content == "myunmei" and start ==12):
+        g = ''.join(random.sample(myhand, k=1))
+        myhand.remove(g)
+        z = ''.join(random.sample(pile, k=1))
+        pile.remove(z)
+        myhand.append(z)
+        start = 16
+        await message.channel.send(g+"を確認して山札底に置きました。"+"\n"+"あなたは"+"\n"+"\n"+z+"を引きました。")
+
+
+
+    #ハンドからなら、yourunmeiと同じ要領でattackやdefenseからリムーブし、mytrashへ。山札ならpileからランダム→pileからリムーブ→mytrashへ（botresoなしなら省略？）
+    if (message.content == "yourseisin" and start == 6) or (message.content == "yourseisin" and start == 9):
+        start = 15
+        await message.channel.send("精神感応に使うカードを宣言してください。")
+
+    if (message.content.startswith("攻撃") and start == 15) or (message.content.startswith("防御") and start == 15):
+        start = 16
+        for name in myhand:
+            if message.content in name:
+                myhand.remove(name)
+                    
+
+                if ability1 in name or ability2 in name or ability3 in name:
+                    await message.channel.send("そのカードは使えます。")
+
+                else:
+                    await message.channel.send("そのカードは使えません。")
+                    break
+
+    if message.content.startswith("山札") and start == 15:
+        y = ''.join(random.sample(pile, k=1))
+        pile.remove(y)
+        start = 16
+
+        if ability1 in y or ability2 in y or ability3 in y:
+            bottrash.append(y)
+            await message.channel.send("山札トップのカードは"+"\n"+"\n"+y+"でした。そのカードは使えます。")
+
+        else:
+            await message.channel.send("山札トップのカードは"+"\n"+"\n"+y+"でした。そのカードは使えません。")
+
+    #myunmeiとpile
+    #if message.content == "myseisin":
+
+    #''joinでok
+    if message.content == "yourtrash":
+        m = ''.join(bottrash)
+        await message.channel.send(m)
+
+    #同じだが、botresoがないなら省略？
+    #if message.content == "mytrash":
+    
+    if message.content == "y":
+        bothand = attack+defense
+        m = len(bothand)
+        f = ''.join(bottrash)
+        await message.channel.send("手札:"+str(m)+"枚"+"\n"+"\n"+"捨て札:"+"\n"+f)
+
+    if message.content == "m":
+        m = ''.join(player)
+        f = ''.join(myhand)
+        await message.channel.send("能力:"+m+"\n"+"\n"+"手札:"+"\n"+f)
+
+    if message.content == "checkstart":
+        await message.channel.send("start ="+str(start))
+
+
+    if message.content == "help":
+        await message.channel.send("コマンド一覧"+"\n"+"\n"+"**you**: ターンを渡す。"+"\n"+"**myturn**: ターンをもらう。"+"\n"+"**y**: 相手の状態を表示する。(手札枚数、捨て札)"+"\n"+"**m**: 自分の状態を確認する。(能力、手札)"+"\n"+"**reso**: レソナンスリング使用。"+"\n"+"**yourseisin**: 相手に対して精神感応を行う。手札の場合はカードを記入(例: 攻撃3 発火)。山札トップの場合は『山札』と記入。**yourunmei**: 相手に対して運命干渉を行う。"+"\n"+"**myunmei**: 自分に運命干渉がなされる。"+"\n"+"**hakai**: 自分が『防御 精神破壊』を使用した後に打つ。相手の能力が1つ開示される。（使用不能にはならない）"+"\n"+"**win**: 勝利宣言。HPを削り切った時に打つ。"+"\n"+"**lose**: 敗北宣言。HPが削り切られた時に打つ。"+"\n"+"**end**: ゲームを終了するときに打つ。(必須)"+"\n"+"\n"+"__攻撃・防御の処理__"+"\n"+"攻撃札・防御を使用するときは、『攻撃3 発火』や『防御 精神破壊』のように記入。（対応能力名やカード説明は記入しない）")
+
+    if message.content == "hakai":
+        await message.channel.send("精神破壊により"+ability1+"を開示しました。")
+
+    if message.content == "botactivehand":
+        botactive = [s for s in defense if (ability1 in s) or (ability2 in s) or (ability3 in s)]+[d for d in attack if (ability1 in d) or (ability2 in d)or (ability3 in d)]
+        await message.channel.send(''.join(botactive))
+
+    if message.content == "yourhand":
+        bothand = attack + defense
+        await message.channel.send(''.join(bothand))
+
+
+    if message.content == "win":
+        await message.channel.send("おめでとうございます！あなたの勝利です！"+"\n"+"能力:"+ability1+ability2+ability3)
+
+    if message.content == "lose":
+        await message.channel.send("私の勝利です！"+"\n"+"能力:"+ability1+ability2+ability3)
+
+    if message.content == "end":
+        start = 0
+        pile = ["攻撃1 落とし物	"+"\n"+"	念運空	"+"\n"+"	任意のプレイヤーに運命干渉を行う。"+"\n"+"\n",
+"攻撃1 占術	"+"\n"+"	運空精	"+"\n"+"	相手にダメージを与えたら、あなたの手札のカード1枚で精神感応を試みてもよい。"+"\n"+"\n",
+"攻撃1 野犬	"+"\n"+"	念運精	"+"\n"+"	任意のプレイヤーに運命干渉を行う。"+"\n"+"\n",
+"攻撃1 滑る地面	"+"\n"+"	熱念運	"+"\n"+"	防御されなければ、次のあなたのターンまで、あなたはダメージを受けない。"+"\n"+"\n",
+"攻撃1 支配	"+"\n"+"	運精	"+"\n"+"	山札の一番上のカードで精神感応を試みる。"+"\n"+"\n",
+"攻撃1 揺さぶり	"+"\n"+"	念空精	"+"\n"+"	相手にダメージを与えたら、あなたの手札のカード1枚で精神感応を試みてもよい。"+"\n"+"\n",
+"攻撃1 磁場	"+"\n"+"	電念運	"+"\n"+"	防御されなければ、次のあなたのターンまで、あなたはダメージを受けない。"+"\n"+"\n",
+"攻撃2 漏電	"+"\n"+"	電空	"+"\n"+"	ターゲット以外のプレイヤー1人に2ダメージを与えてもよい。"+"\n"+"\n",
+"攻撃2 不幸な事故	"+"\n"+"	電熱運"+"\n"+"\n",
+"攻撃2 高速弾	"+"\n"+"	電熱念"+"\n"+"\n",
+"攻撃2 縮地	"+"\n"+"	念空	"+"\n"+"	防御不可"+"\n"+"\n",
+"攻撃2 落石	"+"\n"+"	念運	"+"\n"+"	防御不可。任意のプレイヤーに運命干渉を行う。"+"\n"+"\n",
+"攻撃2 熱感	"+"\n"+"	熱精	"+"\n"+"	相手にダメージを与えたら、あなたの手札のカード1枚で精神感応を試みてもよい。"+"\n"+"\n",
+"攻撃2 拷問	"+"\n"+"	念精	"+"\n"+"	相手にダメージを与えたら、あなたの手札のカード1枚で精神感応を試みてもよい。"+"\n"+"\n",
+"攻撃2 運命変転	"+"\n"+"	運	"+"\n"+"	自分の縦向きの捨て札を1枚選ぶ。そのカードのダメージと効果をこのカードに追加する。"+"\n"+"\n",
+"攻撃3 電磁砲	"+"\n"+"	電念	"+"\n"+"	自分に1ダメージ。防御されなければ、次のあなたのターンまで、あなたはダメージを受けない。"+"\n"+"\n",
+"攻撃3 雹塊	"+"\n"+"	熱運"+"\n"+"\n",
+"攻撃3 爆発	"+"\n"+"	熱念"+"\n"+"\n",
+"攻撃3 落雷	"+"\n"+"	電運	"+"\n"+"	自分に1ダメージ。任意のプレイヤーに運命干渉を行う。"+"\n"+"\n",
+"攻撃4 夢幻暴走	"+"\n"+"	念	"+"\n"+"	次のあなたのターンまで、あなたはダメージを受けず、レゾナンスリングを使用されない。"+"\n"+"\n",
+"攻撃4 電熱ブレード	"+"\n"+"	電熱	"+"\n"+"	自分に2ダメージ。"+"\n"+"\n",
+"攻撃5 完全焼却	"+"\n"+"	熱"+"\n"+"\n",
+"攻撃6 衝天轟雷	"+"\n"+"	電	"+"\n"+"	自分に3ダメージ。"+"\n"+"\n",
+"防御 蜃気楼	"+"\n"+"	熱空精	"+"\n"+"	防御した攻撃のダメージを2軽減する。"+"\n"+"\n",
+"防御 静電気	"+"\n"+"	電空精	"+"\n"+"	防御した攻撃のダメージを2軽減する。"+"\n"+"\n",
+"防御 突風	"+"\n"+"	熱空	"+"\n"+"	防御した攻撃のダメージを2軽減し、ターゲットに1ダメージを与える。"+"\n"+"\n",
+"防御 高速移動	"+"\n"+"	電熱空	"+"\n"+"	防御した攻撃のダメージを1軽減し、ターゲットに1ダメージを与える。"+"\n"+"\n",
+"防御 閃光	"+"\n"+"	電熱精	"+"\n"+"	防御した攻撃のダメージを1軽減し、ターゲットに1ダメージを与える。"+"\n"+"\n",
+"防御 ニューロン暴走	"+"\n"+"	電精	"+"\n"+"	ターゲットに2ダメージを与える。"+"\n"+"\n",
+"防御 空間識変調	"+"\n"+"	空精	"+"\n"+"	防御した攻撃のダメージを1軽減する。その後、あなたの手札のカード1枚で精神感応を試みてもよい。"+"\n"+"\n",
+"防御 落とし穴	"+"\n"+"	運空	"+"\n"+"	防御した攻撃のダメージを2軽減し、任意のプレイヤーに運命干渉を行う。"+"\n"+"\n",
+"防御 空間連結	"+"\n"+"	空	"+"\n"+"	防御した攻撃を無効化する。そのカードを自分の能力を無視して直ちにあなたが使用する。その後、そのカードを元々の使用者の捨て札に縦向きで置く。"+"\n"+"\n",
+"防御 精神破壊	"+"\n"+"	精	"+"\n"+"	自分に4ダメージ。防御した攻撃を無効化する。あなた以外のプレイヤー全員は能力1つを使用不能にする。（能力カードを1枚選び、表にする）"+"\n"+"\n"]
+        attack = []
+        defense = []
+        bottrash = []
+        myhand = []
+        abilityA = ["電", "熱", "念", "運", "空", "精"]
+        abilityB = ["電", "熱", "念", "運", "空", "精"]
+        Hard = 0
+        await message.channel.send("ｻｲﾚﾝﾄﾌｧﾝﾄﾑ ｼｭｳﾘｮｳ ｼﾀ｡ｵｶﾀﾂﾞｹ..(((ノ〇▲)ノ")
+
+
+
+
+
+client.run("NzY0MTc0ODA5MTI2MTQxOTk0.X4CbQA.Xyi6TgxUJv-fwA6caX3rP3ZhLHk")
