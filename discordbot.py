@@ -2,6 +2,10 @@
 import discord
 import random
 import ssl
+import os
+import traceback
+
+token = os.environ['DISCORD_BOT_TOKEN']
 
 client = discord.Client()
 
@@ -855,4 +859,4 @@ async def on_message(message):
 
 
 
-client.run("NzQxOTU5NjM1ODkxNjUwNjEw.Xy_Jwg.eA9_bBSqty7TXRJmD8pRAiSIXSg")
+client.run(token)
