@@ -143,6 +143,9 @@ list0 = ["大気の護符","水の護符","火の護符","土の護符","イシ�
 "水晶のタイタン"]
 listdraw = ["吸血の王冠", "精霊のアミュレット", "水晶球"]
 listN = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+listyear = [1, 2, 3]
+listmonth = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+listdice6 = [1, 2, 3, 4, 5, 6]
 
 listhato=["	a-基本	2	寄付		"	,
 "	a-基本	2	願いの泉		"	,
@@ -295,7 +298,52 @@ async def on_message(message):
         if client.user != message.author:
             random.shuffle(list0)
             random.shuffle(listdraw)
-            m = message.author.name + "さんの今日の運勢は" + listdraw[0] + "で"+ list0[0] + "を引くくらいの運勢です。"
+            random.shuffle(listyear)
+            random.shuffle(listmonth)
+            m = message.author.name + "さんの今日の運勢は" + str(listyear[0]) + "年目" + str(listmonth[0]) + "月に" + listdraw[0] + "で"+ list0[0] + "を引くくらいの運勢です。"
+            await message.channel.send(m)
+            
+    if message.content == "d":
+        if client.user != message.author:
+            random.shuffle(listdice6)
+            m ="出目は" + str(listdice6[0]) + "です。"
+            await message.channel.send(m)
+            
+    if message.content == "d1":
+        if client.user != message.author:
+            random.shuffle(list2)
+            m = list2[0] + "を引きました。"
+            await message.channel.send(m)
+            
+    if message.content == "d2":
+        if client.user != message.author:
+            random.shuffle(list2)
+            m = list2[0] +"・"+list2[1] + "を引きました。"
+            await message.channel.send(m)
+            
+            
+    if message.content == "a1":
+        if client.user != message.author:
+            random.shuffle(list0)
+            m = list0[0] + "を引きました。"
+            await message.channel.send(m)
+            
+    if message.content == "a2":
+        if client.user != message.author:
+            random.shuffle(list0)
+            m = list0[0] +"・"+list0[1] + "を引きました。"
+            await message.channel.send(m)
+            
+    if message.content == "d4":
+        if client.user != message.author:
+            random.shuffle(list2)
+            m = list2[0] +"・"+list2[1] +"・"+list2[2] + "・"+list2[3] + "を引きました。"
+            await message.channel.send(m)
+            
+    if message.content == "a4":
+        if client.user != message.author:
+            random.shuffle(list0)
+            m = list0[0] +"・"+list0[1] +"・"+list0[2] + "・"+list0[3] + "を引きました。"
             await message.channel.send(m)
 
     if message.content.startswith("hato"):
