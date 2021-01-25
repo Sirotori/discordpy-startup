@@ -1,11 +1,12 @@
-from discord.ext import commands
-import os
-import traceback
+#coding: UTF-8
 import discord
 import random
-
+import ssl
+import os
+import traceback
 
 token = os.environ['DISCORD_BOT_TOKEN']
+
 client = discord.Client()
 
 
@@ -48,6 +49,10 @@ bottrash = []
 myhand = []
 abilityA = ["電", "熱", "念", "運", "空", "精"]
 abilityB = ["電", "熱", "念", "運", "空", "精"]
+
+rolelist = []
+rolephase = 0
+
 
 
 startshadow = 0
@@ -93,8 +98,55 @@ list1d4 = [1, 2, 3, 4]
 
 list = ["刀","扇", "薙", "銃", "忍", "傘", "書", "毒", "絡", "騎", "古", "琵", "炎", "笛", "戦", "社","経", "絆","機", "新","爪","拒", "鎌", "塵", "旗","橇","鏡","櫂","兜", "槌","嵐", "棹", "面", "勾", "金", "恐"]
 list2 = ["大気の護符","水の護符","火の護符","土の護符","イシュターの天秤","春の杖","時のブーツ","イオの財布","聖杯","信心深きサイラス","強欲のフィグリム","女預言者ナリア","驚愕の箱","物乞いの角笛","悪意のダイス","破壊者ケアン","首長のアムサグ","魔法の秘本","ラグフィールドの兜","運命の手","灰顔のルイス","イオリスのルーン方体","力の薬","夢の薬","知識の薬","命の薬","時の砂時計","壮大の錫杖","オラフの祝福の像","ヤンの忘れられた花瓶","精霊のアミュレット","光の木","アルカノ蛭","水晶球","暴食の大鍋","吸血の王冠","竜の頭蓋骨","アルゴスの悪魔","深き眼差しのタイタス","大気の精霊","泥棒フェアリー","アルスの呪われた書","使い魔の偶像","壊死のクリス","クシディットのランプ","ウルムの封印された箱","季節の鏡","ラグノールのペンダント","夜影のシド","オニスの忌まわしき魂", "大気の護符","水の護符","火の護符","水の護符","イシュターの天秤","春の杖","時のブーツ","イオの財布","聖杯","信心深きサイラス","強欲のフィグリム","女預言者ナリア","驚愕の箱","物乞いの角笛","悪意のダイス","破壊者ケアン","首長のアムサグ","魔法の秘本","ラグフィールドの兜","運命の手","灰顔のルイス","イオリスのルーン方体","力の薬","夢の薬","知識の薬","命の薬","時の砂時計","壮大の錫杖","オラフの祝福の像","ヤンの忘れられた花瓶","精霊のアミュレット","光の木","アルカノ蛭","水晶球","暴食の大鍋","吸血の王冠","竜の頭蓋骨","アルゴスの悪魔","深き眼差しのタイタス","大気の精霊","泥棒フェアリー","アルスの呪われた書","使い魔の偶像","壊死のクリス","クシディットのランプ","ウルムの封印された箱","季節の鏡","ラグノールのペンダント","夜影のシド","オニスの忌まわしき魂"]
-listdraw = ["吸血の王冠", "精霊のアミュレット", "水晶球", "力の薬"]
+list0 = ["大気の護符","水の護符","火の護符","土の護符","イシュターの天秤","春の杖","時のブーツ","イオの財布","聖杯","信心深きサイラス","強欲のフィグリム","女預言者ナリア","驚愕の箱","物乞いの角笛","悪意のダイス","破壊者ケアン","首長のアムサグ","魔法の秘本","ラグフィールドの兜","運命の手","灰顔のルイス","イオリスのルーン方体","力の薬","夢の薬","知識の薬","命の薬","時の砂時計","壮大の錫杖","オラフの祝福の像","ヤンの忘れられた花瓶","精霊のアミュレット","光の木","アルカノ蛭","水晶球","暴食の大鍋","吸血の王冠","竜の頭蓋骨","アルゴスの悪魔","深き眼差しのタイタス","大気の精霊","泥棒フェアリー","アルスの呪われた書","使い魔の偶像","壊死のクリス","クシディットのランプ","ウルムの封印された箱","季節の鏡","ラグノールのペンダント","夜影のシド","オニスの忌まわしき魂", "大気の護符","水の護符","火の護符","水の護符","イシュターの天秤","春の杖","時のブーツ","イオの財布","聖杯","信心深きサイラス","強欲のフィグリム","女預言者ナリア","驚愕の箱","物乞いの角笛","悪意のダイス","破壊者ケアン","首長のアムサグ","魔法の秘本","ラグフィールドの兜","運命の手","灰顔のルイス","イオリスのルーン方体","力の薬","夢の薬","知識の薬","命の薬","時の砂時計","壮大の錫杖","オラフの祝福の像","ヤンの忘れられた花瓶","精霊のアミュレット","光の木","アルカノ蛭","水晶球","暴食の大鍋","吸血の王冠","竜の頭蓋骨","アルゴスの悪魔","深き眼差しのタイタス","大気の精霊","泥棒フェアリー","アルスの呪われた書","使い魔の偶像","壊死のクリス","クシディットのランプ","ウルムの封印された箱","季節の鏡","ラグノールのペンダント","夜影のシド","オニスの忌まわしき魂", "アルゴスの心臓",
+"豊穣の角笛",
+"妖精の石碑",
+"セレニアの古写本",
+"イシュターの巻物",
+"メソディーのランタン",
+"イオリスの像",
+"使い魔捕え",
+"イオの変転器",
+"再生の玉座",
+"復活の薬",
+"古代の宝石",
+"ジラの盾",
+"信念のダイス",
+"時のアミュレット",
+"不思議な望遠鏡",
+"アルゴスの鷹",
+"強奪者のカラス",
+"アルゴスの監視者",
+"ハシリドコロのネズミ",
+"竜の魂",
+"溶岩の核",
+"運命の悪戯",
+"古代の薬",
+"エシールの泉",
+"コロフの目盛盤",
+"永遠の杯",
+"冬の杖",
+"墓場の護符",
+"イオリスの複製装置",
+"エストリアの竪琴",
+"時の指輪",
+"アルスのミミック",
+"ヒトクイカズラ",
+"ウルムの魂の牢獄",
+"ラグフィールドの従者",
+"アルゴスの絡みつく雑草",
+"イオの手先",
+"神託者オトゥス",
+"狡猾なハシリドコロ",
+"消し去るものイグラマル",
+"逃走するスピードウォール",
+"ラグフィールドのオーブ",
+"水晶のタイタン"]
+listdraw = ["吸血の王冠", "精霊のアミュレット", "水晶球"]
 listN = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+listyear = [1, 2, 3]
+listmonth = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+listdice6 = [1, 2, 3, 4, 5, 6]
 
 listhato=["	a-基本	2	寄付		"	,
 "	a-基本	2	願いの泉		"	,
@@ -228,12 +280,71 @@ async def on_message(message):
             random.shuffle(listN)
             m = message.author.name + "さんの束は" + list2[0]+"・"+list2[1]+"・"+list2[2]+"・"+list2[3]+"・"+list2[4]+"・"+list2[5]+"・"+list2[6]+"・"+list2[7]+"・"+list2[8] + "ですね。左から" + str(listN[0]) + "番目をピックするのがオススメです！"
             await message.channel.send(m)
+            
+    if message.content.startswith("all9"):
+        if client.user != message.author:
+            random.shuffle(list0)
+            random.shuffle(listN)
+            m = message.author.name + "さんの束は" + list0[0]+"・"+list0[1]+"・"+list0[2]+"・"+list0[3]+"・"+list0[4]+"・"+list0[5]+"・"+list0[6]+"・"+list0[7]+"・"+list0[8] + "ですね。左から" + str(listN[0]) + "番目をピックするのがオススメです！"
+            await message.channel.send(m)
 
-    if message.content.startswith("uranai"):
+    if message.content == "uranai":
         if client.user != message.author:
             random.shuffle(list2)
             random.shuffle(listdraw)
             m = message.author.name + "さんの今日の運勢は" + listdraw[0] + "で"+ list2[0] + "を引くくらいの運勢です。"
+            await message.channel.send(m)
+            
+    if message.content == "uranaiall":
+        if client.user != message.author:
+            random.shuffle(list0)
+            random.shuffle(listdraw)
+            random.shuffle(listyear)
+            random.shuffle(listmonth)
+            m = message.author.name + "さんの今日の運勢は" + str(listyear[0]) + "年目" + str(listmonth[0]) + "月に" + listdraw[0] + "で"+ list0[0] + "を引くくらいの運勢です。"
+            await message.channel.send(m)
+            
+    if message.content == "d":
+        if client.user != message.author:
+            random.shuffle(listdice6)
+            m ="出目は" + str(listdice6[0]) + "です。"
+            await message.channel.send(m)
+            
+    if message.content == "d1":
+        if client.user != message.author:
+            random.shuffle(list2)
+            m = list2[0] + "を引きました。"
+            await message.channel.send(m)
+            
+    if message.content == "d2":
+        if client.user != message.author:
+            random.shuffle(list2)
+            m = list2[0] +"・"+list2[1] + "を引きました。"
+            await message.channel.send(m)
+            
+            
+    if message.content == "a1":
+        if client.user != message.author:
+            random.shuffle(list0)
+            m = list0[0] + "を引きました。"
+            await message.channel.send(m)
+            
+    if message.content == "a2":
+        if client.user != message.author:
+            random.shuffle(list0)
+            m = list0[0] +"・"+list0[1] + "を引きました。"
+            await message.channel.send(m)
+            
+    if message.content == "d4":
+        if client.user != message.author:
+            random.shuffle(list2)
+            m = list2[0] +"・"+list2[1] +"・"+list2[2] + "・"+list2[3] + "を引きました。"
+            await message.channel.send(m)
+            
+    if message.content == "a4":
+        if client.user != message.author:
+            random.shuffle(list0)
+            m = list0[0] +"・"+list0[1] +"・"+list0[2] + "・"+list0[3] + "を引きました。"
             await message.channel.send(m)
 
     if message.content.startswith("hato"):
@@ -251,14 +362,41 @@ async def on_message(message):
 
     if message.content.startswith("name"):
         if client.user != message.author:
-            m = "igramulsan"
+            m = "torisan"
             await message.channel.send(m)
+            
+    if message.content == "cube":
+        if client.user != message.author:
+            result = [random.randint(1, 6) for i in range(78)]
+            await message.channel.send(str(result.count(1))+"枚、"+str(result.count(2))+"枚、"+str(result.count(3))+"枚、"+str(result.count(4))+"枚、"+str(result.count(5))+"枚、"+str(result.count(6))+"枚")
+
+            
+    global rolelist, rolephase
+    if message.content == "roleset" and rolephase == 0:
+        rolephase = 1
+        await message.channel.send("以下のリスト例をコピーして役職リストを作成してください。"+"\n"+"※各役職名はダブルクォーテーションマークでくくって下さい。また、役職数はカンマ区切りでいくらでも増やせます。"+"\n"+"[役職A, 役職B, 役職C, 役職D]←このリストの各役職をダブルクォーテーションマークでくくる")
+
+    if message.content.startswith("[") and rolephase == 1:
+        if client.user != message.author:
+            rolelist = eval(message.content)
+            rolephase = 2
+            await message.channel.send("役職リストを読み込みました。ダイレクトメッセージで role と入力すると役職が割り当てられます。reset と入力すると役職リストがリセットされます。")
+
+    if message.content == "role" and rolephase == 2:
+        m = ''.join(random.sample(rolelist, 1))
+        rolelist.remove(m)
+        await message.channel.send(m)
+
+    if (message.content == "reset" and rolephase == 1) or (message.content == "reset" and rolephase == 2):
+        rolelist = []
+        rolephase = 0
+        await message.channel.send("役職リストをリセットしました。")
 
 
     global startshadow, listv, listw, listh, listred, listblue, listgreen, list3, list4, list5, list6, list7, list8
     if message.content=="シャドハン" and startshadow ==0:
         startshadow = 1
-        m = "ｼｬﾄﾞﾊﾝ ｶｲｼ ｼﾀ｡"+"\n"+"\n"+"**m**: move。移動時に使用。"+"\n"+"**a**: attack。ターン終了時に使用。"+"\n"+"**r, g, b**: red, green, blue。山札引き時に使用。"+"\n"+"**1d4, 1d6**: 4面・6面ダイスを振るときに使用。"
+        m = "シャドハンを開始しました｡"+"\n"+"\n"+"**m**: move。移動時に使用。"+"\n"+"**a**: attack。ターン終了時に使用。"+"\n"+"**r, g, b**: red, green, blue。山札引き時に使用。"+"\n"+"**1d4, 1d6**: 4面・6面ダイスを振るときに使用。"
         await message.channel.send(m)
 
 
@@ -373,7 +511,7 @@ async def on_message(message):
         listblue=["祝福(任意) あなたは2点回復する", "遠隔治療(強制) 他のプレイヤーを選び6面ダイスを振り、出た目だけそのプレイヤーを回復", "祝福(任意) あなたは2点回復する", "正体判明(強制) バンパイアかワーウルフなら公開。嘘つきバンパイアなら無効可", "時間移動(強制) あなたの手番の後、即座にもう一度手番を行う", "時間移動(強制) あなたの手番の後、即座にもう一度手番を行う", "回復(任意) ワーウルフなら体力全回複",  "エネルギーの素(任意) キャラクターがA,E,Uならダメージを全回復可能", "聖なる怒り(強制) あなた以外の全プレイヤーに2ダメージ", "守りのオーラ(強制) 現在から次の自分の手番までプレイヤーからの攻撃から守られる(魔女森やカードは喰らう)", "血の月(強制) マーカー一つを血の月マスへ送る", "魔法のコンパス(任意) 移動時、異なるエリアの任意の場所へ移動可能", "リュックサック(強制) あなたの攻撃で誰かを脱落させたならそのプレイヤーの装備をすべて奪う", "守りのローブ(強制) 他プレイヤーからの攻撃により受けるダメージが1減少", "守りのアミュレット(強制) 魔女の森からのダメージを受けない。魔女の森に移動するとさらに1ダメージ回復可能", "タリスマン(強制) カードの吸血蜘蛛、バンパイアの蝙蝠、爆発のダメージを受けない", "守りの指輪(強制) 血の月から守られる", "骨の槍(強制) 自身ワーウルフなら攻撃成功時追加で2ダメージ"]
         listgreen=["手番プレイヤーからこのカードを受け取った時、あなたがバンパイアなら1ダメージを受ける", "手番プレイヤーからこのカードを受け取った時、あなたがバンパイアなら2ダメージを受ける", "手番プレイヤーからこのカードを受け取った時、あなたがワーウルフなら1ダメージを受ける", "手番プレイヤーからこのカードを受け取った時、あなたがワーウルフなら1ダメージを受ける", "手番プレイヤーからこのカードを受け取った時、あなたがバンパイアなら以下の指示に従う。ダメージを受けていなければ1ダメージを受ける。ダメージを受けていれば1ダメージ回復する", "手番プレイヤーからこのカードを受け取った時、あなたがワーウルフなら以下の指示に従う。ダメージを受けていなければ1ダメージを受ける。ダメージを受けていれば1ダメージ回復する", "手番プレイヤーからこのカードを受け取った時、あなたが人間なら以下の指示に従う。ダメージを受けていなければ1ダメージを受ける。ダメージを受けていれば1ダメージ回復する", "手番プレイヤーからこのカードを受け取った時、あなたがバンパイアかワーウルフなら以下の指示に従う。手番プレイヤーにアイテムを一つ渡す。持っていなければ1ダメージ受ける", "手番プレイヤーからこのカードを受け取った時、あなたがバンパイアかワーウルフなら以下の指示に従う。手番プレイヤーにアイテムを一つ渡す。持っていなければ1ダメージ受ける", "手番プレイヤーからこのカードを受け取った時、あなたがワーウルフか人間なら以下の指示に従う。手番プレイヤーにアイテムを一つ渡す。持っていなければ1ダメージ受ける", "手番プレイヤーからこのカードを受け取った時、あなたがワーウルフか人間なら以下の指示に従う。手番プレイヤーにアイテムを一つ渡す。持っていなければ1ダメージ受ける", "手番プレイヤーからこのカードを受け取った時、あなたが人間かバンパイアなら以下の指示に従う。手番プレイヤーにアイテムを一つ渡す。持っていなければ1ダメージ受ける", "手番プレイヤーからこのカードを受け取った時、あなたが人間かバンパイアなら以下の指示に従う。手番プレイヤーにアイテムを一つ渡す。持っていなければ1ダメージ受ける", "手番プレイヤーからこのカードを受け取った時、あなたのキャラクターがABCEUのいずれかであれば1ダメージ受ける", "手番プレイヤーからこのカードを受け取った時、あなたのキャラクターがDFGVWのいずれかであれば2ダメージ受ける", "手番プレイヤーからこのカードを受け取った時、あなたのカードを手番プレイヤーに見せなければならない"]
 
-        await message.channel.send("ｼｬﾄﾞﾊﾝ ｼｭｳﾘｮｳ ｼﾀ。ｵｶﾀﾂﾞｹ..(((ノ〇▲)ノ")
+        await message.channel.send("シャドハンを終了しました")
 
     global start, pile, attack, defense, bottrash, myhand, abilityA, abilityB, ability1, ability2, ability3, bothand, player, botactive, Hard
     if message.content == "hard":
@@ -763,6 +901,8 @@ async def on_message(message):
         abilityB = ["電", "熱", "念", "運", "空", "精"]
         Hard = 0
         await message.channel.send("ｻｲﾚﾝﾄﾌｧﾝﾄﾑ ｼｭｳﾘｮｳ ｼﾀ｡ｵｶﾀﾂﾞｹ..(((ノ〇▲)ノ")
+        
+
 
 
 
