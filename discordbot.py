@@ -49,6 +49,8 @@ myhand = []
 abilityA = ["電", "熱", "念", "運", "空", "精"]
 abilityB = ["電", "熱", "念", "運", "空", "精"]
 
+rolelist = []
+rolephase = 0
 
 startshadow = 0
 
@@ -215,6 +217,27 @@ async def on_message(message):
             m = str(list[0]+list[1]+list[2]) + "とか良いんじゃないですか？"
             # メッセージが送られてきたチャンネルへメッセージを送ります
             await message.channel.send(m)
+            
+    global rolelist, rolephase
+    if message.content == "roleset" and rolephase == 0:
+        rolephase = 1
+        await message.channel.send("以下のリスト例をコピーして役職リストを作成してください。"+"\n"+"※各役職名はダブルクォーテーションマークでくくって下さい。また、役職数はカンマ区切りでいくらでも増やせます。"+"\n"+"[役職A, 役職B, 役職C, 役職D]←このリストの各役職をダブルクォーテーションマークでくくる")
+
+    if message.content.startswith("[") and rolephase == 1:
+        if client.user != message.author:
+            rolelist = eval(message.content)
+            rolephase = 2
+            await message.channel.send("役職リストを読み込みました。ダイレクトメッセージで role と入力すると役職が割り当てられます。reset と入力すると役職リストがリセットされます。")
+
+    if message.content == "role" and rolephase == 2:
+        m = ''.join(random.sample(rolelist, 1))
+        rolelist.remove(m)
+        await message.channel.send(m)
+
+    if (message.content == "reset" and rolephase == 1) or (message.content == "reset" and rolephase == 2):
+        rolelist = []
+        rolephase = 0
+        await message.channel.send("役職リストをリセットしました。")
 
     if message.content.startswith("megami2"):
         if client.user != message.author:
