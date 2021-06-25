@@ -295,7 +295,7 @@ async def on_message(message):
             m = message.author.name + "さんの今日の運勢は" + listdraw[0] + "で"+ list2[0] + "を引くくらいの運勢です。"
             await message.channel.send(m)
             
-    if message.content == "uranaiall":
+    if message.content == "u":
         if client.user != message.author:
             random.shuffle(list0)
             random.shuffle(listdraw)
@@ -367,7 +367,7 @@ async def on_message(message):
             
     if message.content == "cube":
         if client.user != message.author:
-            result = [random.randint(1, 6) for i in range(78)]
+            result = [random.randint(1, 6) for i in range(84)]
             await message.channel.send(str(result.count(1))+"枚、"+str(result.count(2))+"枚、"+str(result.count(3))+"枚、"+str(result.count(4))+"枚、"+str(result.count(5))+"枚、"+str(result.count(6))+"枚")
 
             
